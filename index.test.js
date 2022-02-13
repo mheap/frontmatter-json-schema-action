@@ -110,17 +110,17 @@ Second file
     .mockImplementation(() => jest.fn());
 
   const r = await run();
-  expect(error).toBeCalledWith("must have required property 'title'", {
+  expect(error).toBeCalledWith("demo.md: must have required property 'title'", {
     file: "demo.md",
   });
 
   expect(error).toBeCalledWith(
-    "must NOT have additional properties (additional)",
+    "second.md: must NOT have additional properties (additional)",
     { file: "second.md" }
   );
 
   expect(error).toBeCalledWith(
-    "must NOT have additional properties (another)",
+    "second.md: must NOT have additional properties (another)",
     { file: "second.md" }
   );
 

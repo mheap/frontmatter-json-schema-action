@@ -57,12 +57,12 @@ async function action() {
   }
 
   allErrors.forEach((e) => {
-    core.error(e.message, {
+    core.error(`${e.path}: ${e.message}`, {
       file: e.path,
     });
   });
 
-  if (allErrors.length){
+  if (allErrors.length) {
     core.setFailed();
   }
 }
