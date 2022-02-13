@@ -1,0 +1,18 @@
+name: Frontmatter JSON Schema Validator
+description: Validate YAML frontmatter against a JSON schema
+inputs:
+  paths:
+    description: The paths to read frontmatter from (e.g. `**/*.md`)
+    required: true
+  schema:
+    description: The JSON schema to use when validating
+    required: false
+  schema_path:
+    description: The path to a JSON schema to use when validation. This will override `schema`
+    required: false
+branding:
+  icon: eye
+  color: orange
+runs:
+  using: docker
+  image: "Dockerfile"
