@@ -8,11 +8,13 @@ inputs:
     description: The JSON schema to use when validating
     required: false
   schema_path:
-    description: The path to a JSON schema to use when validation. This will override `schema`
+    description: >-
+      The path to a JSON schema to use when validation. This will override
+      `schema`
     required: false
 branding:
   icon: eye
   color: orange
 runs:
-  using: docker
-  image: "Dockerfile"
+  using: node12
+  main: dist/index.js
