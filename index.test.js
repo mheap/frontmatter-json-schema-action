@@ -81,6 +81,9 @@ test("add annotations and fails when a document does not validate", async () => 
         description: {
           type: "string",
         },
+        wrong: {
+          type: "string",
+        },
       },
       required: ["title"],
       additionalProperties: false,
@@ -92,6 +95,8 @@ test("add annotations and fails when a document does not validate", async () => 
 
   mockContent(`---
 description: Hello
+wrong:
+  - data type
 ---
 Hello file
 `);
@@ -110,6 +115,13 @@ Second file
     .mockImplementation(() => jest.fn());
 
   const r = await run();
+
+  expect(error).toBeCalledTimes(4);
+
+  expect(error).toBeCalledWith("demo.md: must be string (wrong)", {
+    file: "demo.md",
+  });
+  
   expect(error).toBeCalledWith("demo.md: must have required property 'title'", {
     file: "demo.md",
   });

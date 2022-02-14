@@ -50,6 +50,9 @@ async function action() {
           if (e.keyword == "additionalProperties") {
             e.message += ` (${e.params.additionalProperty})`;
           }
+          if (e.instancePath) {
+            e.message += ` (${e.instancePath.slice(1)})`;
+          }
           return e;
         })
       );
