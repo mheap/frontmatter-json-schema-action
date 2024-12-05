@@ -4,7 +4,9 @@ const fg = require("fast-glob");
 const matter = require("gray-matter");
 
 const Ajv = require("ajv");
+const addFormats = require("ajv-formats");
 const ajv = new Ajv({ allErrors: true });
+addFormats(ajv);
 
 async function action() {
   let schema;
