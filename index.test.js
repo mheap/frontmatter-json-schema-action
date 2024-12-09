@@ -37,7 +37,7 @@ test("throws when the provided schema is not JSON", () => {
     INPUT_SCHEMA: "not a json document",
   });
   return expect(run).rejects.toThrow(
-    "Unexpected token o in JSON at position 1"
+      "Unexpected token 'o', \"not a json document\" is not valid JSON"
   );
 });
 
@@ -49,7 +49,7 @@ test("throws when the provided schema_path is not JSON", () => {
   mockContent("file based not json");
 
   return expect(run).rejects.toThrow(
-    "Unexpected token i in JSON at position 1"
+      "Unexpected token 'i', \"file based not json\" is not valid JSON"
   );
 });
 
@@ -178,6 +178,100 @@ Second file
   const r = await run();
   expect(error).not.toBeCalled();
   expect(setFailed).not.toBeCalled();
+
+  return r;
+});
+
+test("validates authors with email format", async () => {
+  restoreTest = mockedEnv({
+    INPUT_SCHEMA: JSON.stringify({
+      type: "object",
+      properties: {
+        authors: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              name: { type: "string" },
+              email: { type: "string", format: "email" }
+            },
+            required: ["name", "email"]
+          }
+        }
+      },
+      required: ["authors"],
+      additionalProperties: false
+    }),
+    INPUT_PATHS: "*.md",
+  });
+
+  jest.spyOn(fg, "sync").mockImplementationOnce(() => ["authors.md"]);
+
+  mockContent(`---
+authors:
+  - name: John Doe
+    email: john.doe@example.com
+  - name: Jane Smith
+    email: jane.smith@example.com
+---
+Content of the file
+`);
+
+  const error = jest.spyOn(core, "error").mockImplementation(() => jest.fn());
+  const setFailed = jest
+      .spyOn(core, "setFailed")
+      .mockImplementation(() => jest.fn());
+
+  const r = await run();
+  expect(error).not.toBeCalled();
+  expect(setFailed).not.toBeCalled();
+
+  return r;
+});
+
+test("fails validation for authors with invalid email format", async () => {
+  restoreTest = mockedEnv({
+    INPUT_SCHEMA: JSON.stringify({
+      type: "object",
+      properties: {
+        authors: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              name: { type: "string" },
+              email: { type: "string", format: "email" }
+            },
+            required: ["name", "email"]
+          }
+        }
+      },
+      required: ["authors"],
+      additionalProperties: false
+    }),
+    INPUT_PATHS: "*.md",
+  });
+
+  jest.spyOn(fg, "sync").mockImplementationOnce(() => ["authors.md"]);
+
+  mockContent(`---
+authors:
+  - name: John Doe
+    email: john.doe@example
+  - name: Jane Smith
+    email: jane.smith@example.com
+---
+Content of the file
+`);
+
+  const error = jest.spyOn(core, "error").mockImplementation(() => jest.fn());
+  const setFailed = jest
+      .spyOn(core, "setFailed")
+      .mockImplementation(() => jest.fn());
+
+  const r = await run();
+  expect(error).toBeCalled();
+  expect(setFailed).toBeCalled();
 
   return r;
 });
